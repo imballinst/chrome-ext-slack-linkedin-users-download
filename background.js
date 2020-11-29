@@ -19,6 +19,7 @@ chrome.webRequest.onBeforeRequest.addListener(
       const parsed = JSON.parse(postedString);
       parsed.count = NUMBER_OF_FETCHED_USERS;
       parsed.index = 'users_by_display_name';
+      parsed.channels = undefined;
       parsed.present_first = false;
       console.log(parsed);
       const filteredFieldUsers = [];
