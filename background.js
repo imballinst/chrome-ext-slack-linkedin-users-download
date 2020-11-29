@@ -5,10 +5,17 @@
 'use strict';
 
 const NUMBER_OF_FETCHED_USERS = 500;
+let hasFetched = false;
 
 chrome.webRequest.onBeforeRequest.addListener(
   async function (info) {
-    if (info.method == 'POST' && info.initiator === 'https://app.slack.com') {
+    if (
+      info.method == 'POST' &&
+      info.initiator === 'https://app.slack.com' &&
+      !hasFetched
+    ) {
+      hasFetched = true;
+
       // Use this to decode the body of your post
       const postedString = decodeURIComponent(
         String.fromCharCode.apply(
