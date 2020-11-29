@@ -51,7 +51,8 @@ chrome.webRequest.onBeforeRequest.addListener(
         const json = await response.json();
         console.log(json);
 
-        const mapped = json.results.map((el) => ({
+        const mapped = json.results.map((el, idx) => ({
+          'No.': filteredFieldUsers.length + idx + 1,
           Alias: el.name || '-',
           'Full Name': el.real_name || '-',
           Timezone: el.tz || '-',
@@ -100,7 +101,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   ['blocking', 'requestBody']
 );
 
-const JSON_FIELDS = ['Alias', 'Full Name', 'Timezone', 'Email'];
+const JSON_FIELDS = ['No.', 'Alias', 'Full Name', 'Timezone', 'Email'];
 
 function jsonToCSV(json) {
   let csvStr = JSON_FIELDS.join(',') + '\n';
