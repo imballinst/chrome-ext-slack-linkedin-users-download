@@ -1,34 +1,35 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 'use strict';
 
-const NUMBER_OF_FETCHED_USERS = 500;
+const NUMBER_OF_FETCHED_USERS_PER_REQUEST = 500;
 let hasFetched = false;
 
 chrome.webRequest.onBeforeRequest.addListener(
   async function (info) {
+    // Allow accessing resources that are from `https://*.slack.com/*`.
+    // This should be defined in `manifest.json`.
     if (
       info.method == 'POST' &&
       info.initiator === 'https://app.slack.com' &&
       !hasFetched
     ) {
+      // Only fetch the list of users once for each browser load.
       hasFetched = true;
 
-      // Use this to decode the body of your post
+      // Decode the request body's "raw stream".
       const postedString = decodeURIComponent(
         String.fromCharCode.apply(
           null,
           new Uint8Array(info.requestBody.raw[0].bytes)
         )
       );
+
       const parsed = JSON.parse(postedString);
-      parsed.count = NUMBER_OF_FETCHED_USERS;
+      parsed.count = NUMBER_OF_FETCHED_USERS_PER_REQUEST;
       parsed.index = 'users_by_display_name';
+      // Remove the filter when we first fetch when arriving at *.slack.com.
       parsed.channels = undefined;
       parsed.present_first = false;
-      console.log(parsed);
+
       const filteredFieldUsers = [];
       let nextMarker = undefined;
 
@@ -43,13 +44,10 @@ chrome.webRequest.onBeforeRequest.addListener(
           method: 'POST',
           body: stringified,
           headers: {
-            'Content-Type': 'application/json',
-            'User-Agent':
-              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36'
+            'Content-Type': 'application/json'
           }
         });
         const json = await response.json();
-        console.log(json);
 
         const mapped = json.results.map((el, idx) => ({
           'No.': filteredFieldUsers.length + idx + 1,
@@ -67,19 +65,21 @@ chrome.webRequest.onBeforeRequest.addListener(
         }
       }
 
-      console.log('final', filteredFieldUsers);
-
+      // Download as CSV.
+      // Note that to enable using extension, we need to add `downloads` permission.
       const blob = new Blob([jsonToCSV(filteredFieldUsers)], {
         type: 'text/csv;charset=utf-8;'
       });
+
       if (navigator.msSaveBlob) {
-        // IE 10+
+        // Internet Explorer 10+ support.
         navigator.msSaveBlob(blob, 'list_users.csv');
       } else {
+        // Other browsers.
         const link = document.createElement('a');
+
+        // Create a "hidden" element that we are going to click to download the CSV file.
         if (link.download !== undefined) {
-          // feature detection
-          // Browsers that support HTML5 download attribute
           const url = URL.createObjectURL(blob);
           link.setAttribute('href', url);
           link.setAttribute('download', 'list_users.csv');
@@ -93,11 +93,12 @@ chrome.webRequest.onBeforeRequest.addListener(
 
     return { cancel: false };
   },
-  // filters
   {
+    // Filters.
     urls: ['https://edgeapi.slack.com/cache/*/users/list']
   },
-  // extraInfoSpec
+  // This is the thing that we defined in `manifest.json`.
+  // Both from `webRequest` and `webRequestBlocking`.
   ['blocking', 'requestBody']
 );
 

@@ -1,7 +1,7 @@
 {
   "name": "Slack Workspace Users Profile Getter",
   "version": "1.0",
-  "description": "Enable the extension, then visit the channel that you'd like to get its list of users.",
+  "description": "Enable the extension, then visit the workspace that you'd like to get its list of users.",
   "permissions": [
     "webRequest",
     "webRequestBlocking",
