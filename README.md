@@ -4,7 +4,7 @@ A Google Chrome browser extension to download the list of users from a particula
 
 ## How to Use
 
-1. Download the [zipped-source code](https://github.com/Imballinst/chrome-ext-list-slack-users/archive/v0.0.1.zip).
+1. Download the [zipped-source code](https://github.com/Imballinst/chrome-ext-list-slack-users/archive/v0.0.2.zip).
 2. Extract the compressed folder.
 3. Open your Chrome, then go to [chrome://extensions](chrome://extensions).
 4. Drag the extracted folder to the Extensions list.
