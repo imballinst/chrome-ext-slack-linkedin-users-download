@@ -1,6 +1,6 @@
 # chrome-ext-list-slack-users
 
-A Google Chrome browser extension to download the list of users from a particular workspace as a CSV file.
+A Google Chrome browser extension to download the list of users from a particular workspace at a particular channel as a CSV file.
 
 ## How to Use
 

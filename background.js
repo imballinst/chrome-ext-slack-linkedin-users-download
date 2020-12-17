@@ -26,8 +26,6 @@ chrome.webRequest.onBeforeRequest.addListener(
       const parsed = JSON.parse(postedString);
       parsed.count = NUMBER_OF_FETCHED_USERS_PER_REQUEST;
       parsed.index = 'users_by_display_name';
-      // Remove the filter when we first fetch when arriving at *.slack.com.
-      parsed.channels = undefined;
       parsed.present_first = false;
 
       const filteredFieldUsers = [];
