@@ -1,20 +1,13 @@
 'use strict';
 
-const NUMBER_OF_FETCHED_USERS_PER_REQUEST = 500;
-let hasFetched = false;
+const NUMBER_OF_FETCHED_USERS_PER_REQUEST = 5000;
 
 chrome.webRequest.onBeforeRequest.addListener(
   async function (info) {
     // Allow accessing resources that are from `https://*.slack.com/*`.
     // This should be defined in `manifest.json`.
-    if (
-      info.method == 'POST' &&
-      info.initiator === 'https://app.slack.com' &&
-      !hasFetched
-    ) {
+    if (info.method == 'POST' && info.initiator === 'https://app.slack.com') {
       // Only fetch the list of users once for each browser load.
-      hasFetched = true;
-
       // Decode the request body's "raw stream".
       const postedString = decodeURIComponent(
         String.fromCharCode.apply(
@@ -101,7 +94,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   ['blocking', 'requestBody']
 );
 
-const JSON_FIELDS = ['No.', 'Alias', 'Full Name', 'Timezone', 'Email'];
+const JSON_FIELDS = ['No.', 'Alias', 'Full Name', 'Title', 'Timezone', 'Email'];
 
 function jsonToCSV(json) {
   let csvStr = JSON_FIELDS.join(',') + '\n';
