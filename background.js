@@ -100,7 +100,7 @@ function jsonToCSV(json) {
   let csvStr = JSON_FIELDS.join(',') + '\n';
 
   json.forEach((element) => {
-    const row = JSON_FIELDS.map((key) => element[key]);
+    const row = JSON_FIELDS.map((key) => `"${element[key]}"`);
 
     csvStr += row.join(',') + '\n';
   });
