@@ -50,6 +50,7 @@ chrome.webRequest.onBeforeRequest.addListener(
         const mapped = json.results.map((el, idx) => ({
           'No.': filteredFieldUsers.length + idx + 1,
           Alias: el.name || '-',
+          Title: el.profile.title || '-',
           'Full Name': el.real_name || '-',
           Timezone: el.tz || '-',
           Email: el.profile.email || '-'
