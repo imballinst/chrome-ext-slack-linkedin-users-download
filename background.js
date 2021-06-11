@@ -13,7 +13,9 @@ setInterval(async () => {
     idx += 1;
 
     for (const header of requestHeaders) {
-      headers[header.name] = header.value;
+      if (header.name.toLowerCase() !== 'referer') {
+        headers[header.name] = header.value;
+      }
     }
 
     const response = await windowThis.fetch(url, {
@@ -96,7 +98,7 @@ setInterval(async () => {
         sliced.map((el) =>
           windowThis
             .fetch(
-              `https://www.linkedin.com/voyager/api/identity/miniprofiles/${el.ProfileId}`,
+              `https://www.linkedin.com/voyager/api/identity/profiles/${el.ProfileId}/profileContactInfo`,
               {
                 method: 'GET',
                 headers
