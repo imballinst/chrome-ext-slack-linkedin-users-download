@@ -6,7 +6,8 @@
     "webRequest",
     "webRequestBlocking",
     "downloads",
-    "https://*.slack.com/*"
+    "https://*.slack.com/*",
+    "https://www.linkedin.com/*"
   ],
   "background": {
     "scripts": ["background.js"],
