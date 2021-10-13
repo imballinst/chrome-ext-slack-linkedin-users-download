@@ -1,4 +1,3 @@
-// Copyright (c) Tetrate, Inc 2021 All Rights Reserved.
 function downloadAsCsv(tabularData, fields) {
   // Download as CSV.
   // Note that to enable using extension, we need to add `downloads` permission.

@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:imballinst/chrome-ext-list-slack-users.git",
-  "author": "Try Ajitiono <aji@tetrate.io>",
+  "author": "Try Ajitiono <ballinst@gmail.com>",
   "license": "MIT"
 }
