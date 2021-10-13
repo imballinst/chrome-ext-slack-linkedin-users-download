@@ -10,7 +10,12 @@
     "https://www.linkedin.com/*"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "shared/constants.js",
+      "shared/csv.js",
+      "linkedin/linkedin.js",
+      "slack/slack.js"
+    ],
     "persistent": true
   },
   "icons": {
