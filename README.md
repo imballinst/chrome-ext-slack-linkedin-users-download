@@ -41,7 +41,7 @@ These information, however, are subject to the owner of each profile. If they do
 
 1. Open the LinkedIn profile that you want to fetch their connections with in your Chrome browser.
 2. Once it has opened, enable the extension..
-3. Refresh the page. This will download all connections from that connection (up to 1000, due to LinkedIn limitations) and save it as a CSV. The downloaded CSV format is `list_users_linkedin_YYYYMMDD.csv`.
+3. Refresh the page. This will download all connections from that connection (up to 1000, due to LinkedIn limitations) and save it as a CSV. The downloaded CSV format is `list_users_linkedin-<connection_slug>_YYYYMMDD.csv`.
 
 ## How It Works
 

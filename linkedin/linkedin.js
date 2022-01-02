@@ -1,11 +1,19 @@
 const promises = [];
 const windowThis = window;
+const fetchedIds = [];
 let idx = 0;
+let profileName;
 
 setInterval(async () => {
   if (promises[idx] !== undefined) {
     const { id, headers } = promises[idx];
 
+    if (fetchedIds.includes(id)) {
+      // Skip duplicate requests.
+      return;
+    }
+
+    fetchedIds.push(id);
     idx += 1;
 
     let currentConnections;
@@ -17,6 +25,7 @@ setInterval(async () => {
       let waitTime = 2000;
 
       try {
+        !fetchedIds.includes(id);
         console.log(
           `fetching connections of ${id} from ${start} to ${start + COUNT}...`
         );
@@ -103,12 +112,9 @@ setInterval(async () => {
 
     console.table(allConnections);
     const JSON_FIELDS = ["Name", "Occupation", "Location", "Email", "Link"];
-    downloadAsCsv(allConnections, JSON_FIELDS, "linkedin");
+    downloadAsCsv(allConnections, JSON_FIELDS, `linkedin-${profileName}`);
   }
 }, 5000);
-
-let profileName;
-let previousProfileName;
 
 chrome.webRequest.onBeforeRequest.addListener(
   async function (info) {
@@ -146,8 +152,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   async function (info) {
     if (
       info.method === "GET" &&
-      info.initiator === "https://www.linkedin.com" &&
-      previousProfileName !== profileName
+      info.initiator === "https://www.linkedin.com"
     ) {
       const headers = getHeaders(info.requestHeaders);
       const response = await windowThis.fetch(
@@ -162,7 +167,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
         "urn:li:fs_profileNetworkInfo:".length
       );
 
-      previousProfileName = profileName;
       promises.push({
         id,
         headers,
