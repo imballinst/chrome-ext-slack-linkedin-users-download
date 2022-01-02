@@ -64,7 +64,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 
       // Download as CSV.
       // Note that to enable using extension, we need to add `downloads` permission.
-      downloadAsCsv(filteredFieldUsers, JSON_FIELDS);
+      downloadAsCsv(filteredFieldUsers, JSON_FIELDS, "slack");
     }
 
     return { cancel: false };

@@ -1,13 +1,15 @@
-function downloadAsCsv(tabularData, fields) {
+function downloadAsCsv(tabularData, fields, label = "") {
   // Download as CSV.
   // Note that to enable using extension, we need to add `downloads` permission.
   const blob = new Blob([jsonToCSV(tabularData, fields)], {
     type: "text/csv;charset=utf-8;",
   });
+  const date = new Date();
+  const name = `list_users_${label}_${date.getFullYear()}${date.getMonth()}${date.getDate()}`;
 
   if (navigator.msSaveBlob) {
     // Internet Explorer 10+ support.
-    navigator.msSaveBlob(blob, "list_users.csv");
+    navigator.msSaveBlob(blob, name);
   } else {
     // Other browsers.
     const link = document.createElement("a");
@@ -16,7 +18,7 @@ function downloadAsCsv(tabularData, fields) {
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", "list_users.csv");
+      link.setAttribute("download", name);
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();

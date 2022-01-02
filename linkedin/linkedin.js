@@ -103,7 +103,7 @@ setInterval(async () => {
 
     console.table(allConnections);
     const JSON_FIELDS = ["Name", "Occupation", "Location", "Email", "Link"];
-    downloadAsCsv(allConnections, JSON_FIELDS);
+    downloadAsCsv(allConnections, JSON_FIELDS, "linkedin");
   }
 }, 5000);
 
