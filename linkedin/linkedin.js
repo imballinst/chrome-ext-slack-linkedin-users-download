@@ -124,9 +124,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   },
   {
     // Filters.
-    urls: [
-      "https://www.linkedin.com/voyager/api/identity/profiles/*/browsemapWithDistance",
-    ],
+    urls: ["https://www.linkedin.com/voyager/api/identity/dash/profiles"],
   },
   [
     // This is the thing that we defined in `manifest.json`.
