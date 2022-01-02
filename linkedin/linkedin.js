@@ -108,23 +108,31 @@ setInterval(async () => {
 }, 5000);
 
 let profileName;
+let previousProfileName;
 
 chrome.webRequest.onBeforeRequest.addListener(
   async function (info) {
-    console.log("hey", info);
     if (
       info.method === "GET" &&
       info.initiator === "https://www.linkedin.com"
     ) {
       const pathnames = info.url.split("/");
       profileName = pathnames[pathnames.length - 2];
+
+      console.log(
+        `Initializing profile fetch for LinkedIn profile: ${profileName}`,
+        info
+      );
     }
 
     return { cancel: false };
   },
   {
     // Filters.
-    urls: ["https://www.linkedin.com/voyager/api/identity/dash/profiles"],
+    urls: [
+      "https://www.linkedin.com/voyager/api/identity/profiles/*/browsemapWithDistance",
+      "https://www.linkedin.com/voyager/api/identity/profiles/*/opportunityCards?q=topCard",
+    ],
   },
   [
     // This is the thing that we defined in `manifest.json`.
@@ -138,7 +146,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
   async function (info) {
     if (
       info.method === "GET" &&
-      info.initiator === "https://www.linkedin.com"
+      info.initiator === "https://www.linkedin.com" &&
+      previousProfileName !== profileName
     ) {
       const headers = getHeaders(info.requestHeaders);
       const response = await windowThis.fetch(
@@ -153,16 +162,27 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
         "urn:li:fs_profileNetworkInfo:".length
       );
 
+      previousProfileName = profileName;
       promises.push({
         id,
         headers,
       });
+
+      console.log(
+        `Preparing profile fetch for LinkedIn profile: ${profileName} with ID ${id}`,
+        info
+      );
+    } else {
+      console.log(
+        `Profile ${profileName} is already on fetching process. Skipping...`
+      );
     }
   },
   {
     // Filters.
     urls: [
       "https://www.linkedin.com/voyager/api/identity/profiles/*/browsemapWithDistance",
+      "https://www.linkedin.com/voyager/api/identity/profiles/*/opportunityCards?q=topCard",
     ],
   },
   ["requestHeaders"]

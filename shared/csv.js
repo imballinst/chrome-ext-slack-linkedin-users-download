@@ -5,7 +5,9 @@ function downloadAsCsv(tabularData, fields, label = "") {
     type: "text/csv;charset=utf-8;",
   });
   const date = new Date();
-  const name = `list_users_${label}_${date.getFullYear()}${date.getMonth()}${date.getDate()}`;
+  const name = `list_users_${label}_${pad(date.getFullYear())}${pad(
+    date.getMonth()
+  )}${pad(date.getDate())}`;
 
   if (navigator.msSaveBlob) {
     // Internet Explorer 10+ support.
@@ -37,4 +39,9 @@ function jsonToCSV(json, fields) {
   });
 
   return csvStr;
+}
+
+function pad(num) {
+  const str = `${num}`;
+  return str.padStart(2, "0");
 }
