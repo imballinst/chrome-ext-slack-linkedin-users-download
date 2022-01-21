@@ -1,5 +1,7 @@
 # chrome-ext-list-slack-users
 
+> This repository is not maintained anymore as it's against LinkedIn's User Agreement. See https://www.linkedin.com/legal/user-agreement#dos.
+
 A Google Chrome browser extension to download (1) the list of users from a particular Slack workspace at a particular channel and (2) the list of connections of a LinkedIn connection (given that their connections are public) as a CSV file.
 
 **WARNING**: use it at your own risk! This is an unofficial extension (and I am not planning to publish it). Although this extension sniffs token/cookie, it will not be transferred anywhere (it will be _only_ used in this extension). I can guarantee that. However, I can't guarantee you the platform safety (e.g. if the platform catches you "abusing" the token/cookie and gives you a warning, that is beyond my responsibility).

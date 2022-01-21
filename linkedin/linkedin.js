@@ -80,20 +80,26 @@ setInterval(async () => {
     }
 
     // Fetch email addresses.
+    const SLICE_COUNT = 5;
     const allMiniProfiles = [];
     const allPositions = [];
 
     for (
-      let i = 0, length = allConnections.length / COUNT;
+      let i = 0, length = allConnections.length / SLICE_COUNT;
       i < length;
       i += 1
     ) {
-      const sliced = allConnections.slice(i * COUNT, i * COUNT + COUNT);
-      console.log(
-        `fetching miniprofiles from ${i * COUNT} to ${i * COUNT + COUNT}...`
+      const sliced = allConnections.slice(
+        i * SLICE_COUNT,
+        i * SLICE_COUNT + SLICE_COUNT
       );
-      const responses = await Promise.all([
-        ...sliced.map((el) =>
+      console.log(
+        `fetching miniprofiles from ${i * SLICE_COUNT} to ${
+          i * SLICE_COUNT + SLICE_COUNT
+        }...`
+      );
+      const responses = await Promise.all(
+        sliced.map((el) =>
           windowThis
             .fetch(
               `https://www.linkedin.com/voyager/api/identity/profiles/${el.ProfileId}/profileContactInfo`,
@@ -103,23 +109,40 @@ setInterval(async () => {
               }
             )
             .then((res) => res.json())
-        ),
-        ...sliced.map((el) =>
+        )
+      );
+
+      allMiniProfiles.push(...responses.map((res) => res.data));
+      await wait(waitTime);
+    }
+
+    // Fetch current positions.
+    for (
+      let i = 0, length = allConnections.length / SLICE_COUNT;
+      i < length;
+      i += 1
+    ) {
+      const sliced = allConnections.slice(
+        i * SLICE_COUNT,
+        i * SLICE_COUNT + SLICE_COUNT
+      );
+      console.log(
+        `fetching current positions from ${i * SLICE_COUNT} to ${
+          i * SLICE_COUNT + SLICE_COUNT
+        }...`
+      );
+      const responses = await Promise.all(
+        sliced.map((el) =>
           windowThis
             .fetch(`https://www.linkedin.com/in/${el.ProfileId}`, {
               method: "GET",
               headers,
             })
             .then((res) => res.text())
-        ),
-      ]);
-      const [miniProfileResponses, htmlResponses] = [
-        responses.slice(0, sliced.length),
-        responses.slice(sliced.length),
-      ];
+        )
+      );
 
-      allMiniProfiles.push(...miniProfileResponses.map((res) => res.data));
-      allPositions.push(...htmlResponses.map((res) => getCompanyName(res)));
+      allPositions.push(...responses.map((res) => getCompanyName(res)));
       await wait(waitTime);
     }
 
