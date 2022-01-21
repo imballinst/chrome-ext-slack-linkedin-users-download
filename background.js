@@ -1,2 +1,2 @@
-require("./linkedin/linkedin");
-require("./slack/slack");
+// require("./linkedin/linkedin");
+// require("./slack/slack");

@@ -13,6 +13,7 @@
     "scripts": [
       "shared/constants.js",
       "shared/csv.js",
+      "shared/jquery.js",
       "linkedin/linkedin.js",
       "slack/slack.js"
     ],

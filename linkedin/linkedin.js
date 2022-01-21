@@ -17,7 +17,7 @@ setInterval(async () => {
     idx += 1;
 
     let currentConnections;
-    const COUNT = 50;
+    const COUNT = 5;
     const allConnections = [];
     let start = 0;
 
@@ -30,16 +30,15 @@ setInterval(async () => {
           `fetching connections of ${id} from ${start} to ${start + COUNT}...`
         );
 
-        const response1 = await windowThis.fetch(
+        const searchResponse = await windowThis.fetch(
           `https://www.linkedin.com/voyager/api/search/dash/clusters?decorationId=com.linkedin.voyager.dash.deco.search.SearchClusterCollection-123&origin=MEMBER_PROFILE_CANNED_SEARCH&q=all&query=(flagshipSearchIntent:SEARCH_SRP,queryParameters:(connectionOf:List(${id}),network:List(F,S),resultType:List(PEOPLE)),includeFiltersInResponse:false)&start=${start}&count=${COUNT}`,
           {
             method: "GET",
             headers,
           }
         );
-        const json1 = await response1.json();
-        console.log(json1);
-        const connections = json1.included.filter((el) =>
+        const json = await searchResponse.json();
+        const connections = json.included.filter((el) =>
           el.trackingUrn?.includes("urn:li:member")
         );
 
@@ -57,6 +56,8 @@ setInterval(async () => {
               Name: el.title?.text,
               Occupation: el.primarySubtitle?.text,
               Location: el.secondarySubtitle?.text,
+              // These will be filled later.
+              "Current Position": "",
               Email: "",
               Link: `https://www.linkedin.com/in/${profileId}`,
               ProfileId: profileId,
@@ -76,8 +77,11 @@ setInterval(async () => {
       await wait(waitTime);
     }
 
+    // Fetch email addresses.
     const SLICE_COUNT = 5;
     const allMiniProfiles = [];
+    const allPositions = [];
+
     for (let i = 0, length = allConnections.length / 5; i < length; i += 1) {
       const sliced = allConnections.slice(
         i * SLICE_COUNT,
@@ -88,8 +92,8 @@ setInterval(async () => {
           i * SLICE_COUNT + SLICE_COUNT
         }...`
       );
-      const responses = await Promise.all(
-        sliced.map((el) =>
+      const responses = await Promise.all([
+        ...sliced.map((el) =>
           windowThis
             .fetch(
               `https://www.linkedin.com/voyager/api/identity/profiles/${el.ProfileId}/profileContactInfo`,
@@ -99,19 +103,40 @@ setInterval(async () => {
               }
             )
             .then((res) => res.json())
-        )
-      );
+        ),
+        ...sliced.map((el) =>
+          windowThis
+            .fetch(`https://www.linkedin.com/in/${el.ProfileId}`, {
+              method: "GET",
+              headers,
+            })
+            .then((res) => res.text())
+        ),
+      ]);
+      const [miniProfileResponses, htmlResponses] = [
+        responses.slice(0, sliced.length),
+        responses.slice(sliced.length),
+      ];
 
-      allMiniProfiles.push(...responses.map((res) => res.data));
+      allMiniProfiles.push(...miniProfileResponses.map((res) => res.data));
+      allPositions.push(...htmlResponses.map((res) => getCompanyName(res)));
       await wait(1000);
     }
 
     allMiniProfiles.forEach((el, idx) => {
       allConnections[idx].Email = el.emailAddress;
+      allConnections[idx]["Current Position"] = allPositions[idx];
     });
 
     console.table(allConnections);
-    const JSON_FIELDS = ["Name", "Occupation", "Location", "Email", "Link"];
+    const JSON_FIELDS = [
+      "Name",
+      "Occupation",
+      "Current Position",
+      "Location",
+      "Email",
+      "Link",
+    ];
     downloadAsCsv(allConnections, JSON_FIELDS, `linkedin-${profileName}`);
   }
 }, 5000);
@@ -211,4 +236,42 @@ function getHeaders(requestHeaders) {
   }
 
   return headers;
+}
+
+function getMatchingCodeContainingEmployment(code) {
+  try {
+    const json = code.innerHTML.replace(/\n\s+/g, "");
+    const parsed = JSON.parse(json);
+
+    return parsed.included?.find(
+      (yy) =>
+        yy.dateRange &&
+        yy.dateRange.end === undefined &&
+        (yy.locationName !== undefined || yy.title !== undefined) &&
+        yy["$type"] === "com.linkedin.voyager.dash.identity.profile.Position"
+    );
+  } catch (err) {
+    return {};
+  }
+}
+
+function getCompanyName(htmlString) {
+  // Filter by code.
+  const parsedHtml = $(htmlString);
+
+  const codes = [];
+  let companyName = "-";
+
+  parsedHtml.each((_, e) => {
+    if (e.localName === "code") {
+      codes.push(getMatchingCodeContainingEmployment(e));
+    }
+  });
+
+  const match = codes.find((c) => c !== undefined);
+  if (match !== undefined) {
+    companyName = match.title;
+  }
+
+  return companyName;
 }
