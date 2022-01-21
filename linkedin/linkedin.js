@@ -17,7 +17,7 @@ setInterval(async () => {
     idx += 1;
 
     let currentConnections;
-    const COUNT = 5;
+    const COUNT = 50;
     const allConnections = [];
     let start = 0;
 
