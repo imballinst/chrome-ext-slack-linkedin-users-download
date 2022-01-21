@@ -27,7 +27,9 @@ setInterval(async () => {
       try {
         !fetchedIds.includes(id);
         console.log(
-          `fetching connections of ${id} from ${start} to ${start + COUNT}...`
+          `fetching connections of ${profileName} from ${start} to ${
+            start + COUNT
+          }...`
         );
 
         const searchResponse = await windowThis.fetch(
