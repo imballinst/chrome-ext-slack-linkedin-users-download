@@ -80,19 +80,17 @@ setInterval(async () => {
     }
 
     // Fetch email addresses.
-    const SLICE_COUNT = 5;
     const allMiniProfiles = [];
     const allPositions = [];
 
-    for (let i = 0, length = allConnections.length / 5; i < length; i += 1) {
-      const sliced = allConnections.slice(
-        i * SLICE_COUNT,
-        i * SLICE_COUNT + SLICE_COUNT
-      );
+    for (
+      let i = 0, length = allConnections.length / COUNT;
+      i < length;
+      i += 1
+    ) {
+      const sliced = allConnections.slice(i * COUNT, i * COUNT + COUNT);
       console.log(
-        `fetching miniprofiles from ${i * SLICE_COUNT} to ${
-          i * SLICE_COUNT + SLICE_COUNT
-        }...`
+        `fetching miniprofiles from ${i * COUNT} to ${i * COUNT + COUNT}...`
       );
       const responses = await Promise.all([
         ...sliced.map((el) =>
@@ -122,7 +120,7 @@ setInterval(async () => {
 
       allMiniProfiles.push(...miniProfileResponses.map((res) => res.data));
       allPositions.push(...htmlResponses.map((res) => getCompanyName(res)));
-      await wait(1000);
+      await wait(waitTime);
     }
 
     allMiniProfiles.forEach((el, idx) => {
